@@ -6,3 +6,7 @@ if __name__ == '__main__':
     for i in test_list.filter_dict(a__gt=3, b__ge=4):
         print(i)
 
+    test_list = list_ext([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
+
+    for i in test_list.group(3):
+        print(i)

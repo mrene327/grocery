@@ -17,6 +17,11 @@ class list_ext(list):
             if self.__cmp_dict(item, **kwargs):
                 yield item
 
+    def group(self, num):
+        """将列表以n个为一组进行分组"""
+        for i in range(0, len(self), num):
+            yield self[i:i + num]
+
 
 class Counter(BuiltInCounter):
     def __add__(self, other):

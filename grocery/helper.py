@@ -101,3 +101,19 @@ def get_ip_address(ifname: (str, bytes)):
     ifname = isinstance(ifname, bytes) and ifname or ifname.encode()
     return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
+
+def safe_get_dict(dictionary: dict, keys: str, separator: str = ','):
+    """
+    适用于从嵌套比较多的字典中取数据，
+    :param dictionary: 目标字典.
+    :param keys: 目标数据所在的字典路径，是一个字符串，多个key可用指定符号分隔。
+    :param separator: 分隔符，用于分隔多个key，默认值','
+    :return: 指定字典路径的数据，如果路径不存在，返回 None
+    """
+    keys = keys.split(separator)
+    for key in keys:
+        try:
+            dictionary = dictionary[key]
+        except Exception:
+            return None
+    return dictionary
