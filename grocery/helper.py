@@ -1,3 +1,4 @@
+import os
 import random
 import tarfile
 import hashlib
@@ -101,3 +102,11 @@ def get_ip_address(ifname: (str, bytes)):
     ifname = isinstance(ifname, bytes) and ifname or ifname.encode()
     return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
+
+def get_file_list(target_dir, suffix=None):
+    root, _, files = next(os.walk(target_dir))
+    if suffix:
+        files = [os.path.join(root, file) for file in files if os.path.splitext(file)[1] == f'.{suffix}']
+    else:
+        files = [os.path.join(root, file) for file in files]
+    return files
