@@ -6,3 +6,7 @@ if __name__ == '__main__':
     for i in test_list.filter_dict(subject__le='zlgCmigzrP ts:1602434126.178824'):
         print(i)
 
+    test_list = list_ext([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
+
+    for i in test_list.group(3):
+        print(i)
