@@ -1,3 +1,4 @@
+import os
 import random
 import tarfile
 import hashlib
@@ -117,3 +118,12 @@ def safe_get_dict(dictionary: dict, keys: str, separator: str = ','):
         except Exception:
             return None
     return dictionary
+
+
+def get_file_list(target_dir, suffix=None):
+    root, _, files = next(os.walk(target_dir))
+    if suffix:
+        files = [os.path.join(root, file) for file in files if os.path.splitext(file)[1] == f'.{suffix}']
+    else:
+        files = [os.path.join(root, file) for file in files]
+    return files
