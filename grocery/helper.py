@@ -17,7 +17,7 @@ from email.mime.multipart import MIMEMultipart
 from email.header import Header
 
 
-def randstr(str_type: str = None, length: int = 8):
+def randstr(str_type: str = None, length: int = 8) -> str:
     """
     Generate a random alphabet string or special characters or mixed characters.
     str_type: "alphabet" and "spec_char" are accepted. "str_type=None" indicate all alphabets and special characters.
@@ -34,9 +34,23 @@ def randstr(str_type: str = None, length: int = 8):
 
 
 def send_email(
-        smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str, to: list,
+        smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str, to: (str, list),
         subject: str = '', content: str = '', attachments: List[Path] = None
-):
+) -> None:
+    """发送邮件
+
+    :param smtp_svr: SMTP服务器
+    :param smtp_svr_port: SMTP服务端口号
+    :param account: 发件人帐号
+    :param account_pwd: 发件人帐号的密码
+    :param to: 收件人列表
+    :param subject: 邮件主题
+    :param content: 邮件内容
+    :param attachments: 附件列表，列表为附件的路径
+    :return: None
+    """
+    if isinstance(to, str):
+        to = [to]
     msg = MIMEMultipart()
     msg['From'] = account
     msg['To'] = ",".join(to)
@@ -72,7 +86,7 @@ def tar_files(archive_fp: Path, files: List[Path]):
             archive.add(f, recursive=True, arcname=f.name)
 
 
-def md5(s: (str, bytes)):
+def md5(s: (str, bytes)) -> str:
     m = hashlib.md5()
     m.update(isinstance(s, bytes) and s or s.encode())
     return m.hexdigest()
@@ -91,7 +105,7 @@ def get_file_md5(fp: str):
     return str(_hash).upper()
 
 
-def get_ip_address(ifname: (str, bytes)):
+def get_ip_address(ifname: (str, bytes)) -> str:
     """
     Get the IP address of current system
     note: this method tested on Linux ONLY
@@ -103,7 +117,7 @@ def get_ip_address(ifname: (str, bytes)):
     return socket.inet_ntoa(fcntl.ioctl(s.fileno(), 0x8915, struct.pack('256s', ifname[:15]))[20:24])
 
 
-def safe_get_dict(dictionary: dict, keys: str, separator: str = ','):
+def safe_get_dict(dictionary: dict, keys: str, separator: str = '.'):
     """
     适用于从嵌套比较多的字典中取数据，
     :param dictionary: 目标字典.
