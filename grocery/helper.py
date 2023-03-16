@@ -34,8 +34,9 @@ def randstr(str_type: str = None, length: int = 8) -> str:
 
 
 def send_email(
-        smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str, to: (str, list),
-        subject: str = '', content: str = '', from_: str=None, attachments: List[Path] = None
+        smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str,
+        from_: str=None, to: (str, list) = None, cc: (str, list) = None, bcc: (str, list) = None,
+        subject: str = '', content: str = '', attachments: List[Path] = None
 ) -> None:
     """发送邮件
 
@@ -45,16 +46,27 @@ def send_email(
     :param account_pwd: 发件人帐号的密码
     :param from_: 代发帐号
     :param to: 收件人列表
+    :param cc: 抄送人列表
+    :param bcc: 密送人列表
     :param subject: 邮件主题
     :param content: 邮件内容
     :param attachments: 附件列表，列表为附件的路径
     :return: None
     """
+    to = to or []
+    cc = cc or []
+    bcc = bcc or []
     if isinstance(to, str):
         to = [to]
+    if isinstance(cc, str):
+        cc = [cc]
+    if isinstance(bcc, str):
+        bcc = [bcc]
     msg = MIMEMultipart()
     msg['From'] = from_ or account
     msg['To'] = ",".join(to)
+    msg['Cc'] = ",".join(cc)
+    msg['Bcc'] = ",".join(bcc)
     msg['Subject'] = Header(subject, 'utf-8').encode()
 
     msg.attach(MIMEText(content, 'plain', 'utf-8'))
@@ -76,7 +88,7 @@ def send_email(
     try:
         smtpObj = smtplib.SMTP_SSL(smtp_svr, smtp_svr_port)
         smtpObj.login(account, account_pwd)
-        smtpObj.sendmail(account, to, msg.as_string())
+        smtpObj.sendmail(account, to + cc + bcc, msg.as_string())
     except smtplib.SMTPException as e:
         raise Exception('Fail to send email!')
 
