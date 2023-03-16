@@ -35,7 +35,7 @@ def randstr(str_type: str = None, length: int = 8) -> str:
 
 def send_email(
         smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str, to: (str, list),
-        subject: str = '', content: str = '', attachments: List[Path] = None
+        subject: str = '', content: str = '', from_: str=None, attachments: List[Path] = None
 ) -> None:
     """发送邮件
 
@@ -43,6 +43,7 @@ def send_email(
     :param smtp_svr_port: SMTP服务端口号
     :param account: 发件人帐号
     :param account_pwd: 发件人帐号的密码
+    :param from_: 代发帐号
     :param to: 收件人列表
     :param subject: 邮件主题
     :param content: 邮件内容
@@ -52,7 +53,7 @@ def send_email(
     if isinstance(to, str):
         to = [to]
     msg = MIMEMultipart()
-    msg['From'] = account
+    msg['From'] = from_ or account
     msg['To'] = ",".join(to)
     msg['Subject'] = Header(subject, 'utf-8').encode()
 
