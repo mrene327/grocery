@@ -36,7 +36,7 @@ def randstr(str_type: str = None, length: int = 8) -> str:
 def send_email(
         smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str,
         from_: str=None, to: (str, list) = None, cc: (str, list) = None, bcc: (str, list) = None,
-        subject: str = '', content: str = '', attachments: List[Path] = None
+        subject: str = '', content: str = '', attachments: List[Path] = None, timeout: int = 5
 ) -> None:
     """发送邮件
 
@@ -51,6 +51,7 @@ def send_email(
     :param subject: 邮件主题
     :param content: 邮件内容
     :param attachments: 附件列表，列表为附件的路径
+    :param timeout: smtp服务连接超时时间，默认：5s
     :return: None
     """
     to = to or []
@@ -86,7 +87,7 @@ def send_email(
             # 添加到MIMEMultipart:
             msg.attach(mime)
     try:
-        smtpObj = smtplib.SMTP_SSL(smtp_svr, smtp_svr_port)
+        smtpObj = smtplib.SMTP_SSL(smtp_svr, smtp_svr_port, timeout=timeout)
         smtpObj.login(account, account_pwd)
         smtpObj.sendmail(account, to + cc + bcc, msg.as_string())
     except smtplib.SMTPException as e:
