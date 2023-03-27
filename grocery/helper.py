@@ -34,16 +34,17 @@ def randstr(str_type: str = None, length: int = 8) -> str:
 
 
 def send_email(
-        smtp_svr: str, smtp_svr_port: int, account: str, account_pwd: str,
+        smtp_svr: str, account: str, account_pwd: str=None, via_ssl:bool = False, smtp_svr_port: int = 25,
         from_: str=None, to: (str, list) = None, cc: (str, list) = None, bcc: (str, list) = None,
         subject: str = '', content: str = '', attachments: List[Path] = None, timeout: int = 5
 ) -> None:
     """发送邮件
 
     :param smtp_svr: SMTP服务器
-    :param smtp_svr_port: SMTP服务端口号
     :param account: 发件人帐号
     :param account_pwd: 发件人帐号的密码
+    :param via_ssl: 是否通过SSL
+    :param smtp_svr_port: SMTP服务端口号，默认25
     :param from_: 代发帐号
     :param to: 收件人列表
     :param cc: 抄送人列表
@@ -87,9 +88,13 @@ def send_email(
             # 添加到MIMEMultipart:
             msg.attach(mime)
     try:
-        smtpObj = smtplib.SMTP_SSL(smtp_svr, smtp_svr_port, timeout=timeout)
-        smtpObj.login(account, account_pwd)
-        smtpObj.sendmail(account, to + cc + bcc, msg.as_string())
+        if via_ssl:
+            smtp_obj = smtplib.SMTP_SSL(smtp_svr, smtp_svr_port, timeout=timeout)
+        else:
+            smtp_obj = smtplib.SMTP(smtp_svr, smtp_svr_port, timeout=timeout)
+        if account_pwd:
+            smtp_obj.login(account, account_pwd)
+        smtp_obj.sendmail(account, to + cc + bcc, msg.as_string())
     except smtplib.SMTPException as e:
         raise Exception('Fail to send email!')
 
